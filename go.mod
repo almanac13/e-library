@@ -1,4 +1,4 @@
-module github.com/almanac12/e-library/book-service
+module github.com/almanac13/e-library/book-service
 
 go 1.26.1
 

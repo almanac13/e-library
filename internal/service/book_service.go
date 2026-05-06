@@ -3,41 +3,72 @@ package service
 import (
 	"errors"
 
-	"github.com/google/uuid"
-	"github.com/almanac12/e-library/book-service/internal/model"
+	"github.com/almanac13/e-library/book-service/internal/model"
+	"github.com/almanac13/e-library/book-service/internal/repository"
 )
 
-type BookService struct{
-	books map[string]model.Book
+type BookService struct {
+	repo *repository.BookRepository
 }
 
-func NewBookService() *BookService{
-	return &BookService{
-		books: make(map[string]model.Book),
-	}
+func NewBookService(repo *repository.BookRepository) *BookService {
+	return &BookService{repo: repo}
 }
 
-func (s *BookService) GetAllBooks() []model.Book{
-	result := make([]model.Book, 0, len(s.books))
-	for _, b := range s.books {
-		result = append(result, b)
-	}
-	return result
+func (s *BookService) GetAll() ([]model.Book, error) {
+	return s.repo.GetAll()
 }
 
-func (s *BookService) GetBookByID(id string) (model.Book, error){
-	book, ok := s.books[id]
-	if !ok{
-		return model.Book{}, errors.New("not found")
+func (s *BookService) GetByID(id int) (*model.Book, error) {
+	book, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, err
 	}
+
+	if book == nil {
+		return nil, errors.New("book not found")
+	}
+
 	return book, nil
 }
 
-func (s *BookService) CreateBook(b model.Book) model.Book {
-	b.ID = uuid.New().String()
-	b.Available = true
-	s.books[b.ID] = b
-	return b
+func (s *BookService) Create(req model.CreateBookRequest) (*model.Book, error) {
+	if req.Title == "" || req.Author == "" || req.Category == "" {
+		return nil, errors.New("title, author and category are required")
+	}
+
+	return s.repo.Create(req)
 }
 
+func (s *BookService) Update(id int, req model.UpdateBookRequest) (*model.Book, error) {
+	if req.Title == "" || req.Author == "" || req.Category == "" {
+		return nil, errors.New("title, author and category are required")
+	}
 
+	book, err := s.repo.Update(id, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if book == nil {
+		return nil, errors.New("book not found")
+	}
+
+	return book, nil
+}
+
+func (s *BookService) Delete(id int) error {
+	if err := s.repo.Delete(id); err != nil {
+		return errors.New("book not found")
+	}
+
+	return nil
+}
+
+func (s *BookService) FindByAuthor(author string) ([]model.Book, error) {
+	if author == "" {
+		return nil, errors.New("author query parameter is required")
+	}
+
+	return s.repo.FindByAuthor(author)
+}
