@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package book;
+
+option go_package = "./gen/bookpb";
+
+service BookService {
+  rpc CreateBook(CreateBookRequest) returns (BookResponse);
+  rpc GetBookByID(GetBookByIDRequest) returns (BookResponse);
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+  rpc UpdateBook(UpdateBookRequest) returns (BookResponse);
+  rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+
+  rpc SearchBooks(SearchBooksRequest) returns (ListBooksResponse);
+  rpc ListBooksByAuthor(ListBooksByAuthorRequest) returns (ListBooksResponse);
+  rpc ListBooksByCategory(ListBooksByCategoryRequest) returns (ListBooksResponse);
+  rpc CheckBookAvailability(CheckBookAvailabilityRequest) returns (AvailabilityResponse);
+
+  rpc MarkBookAvailable(MarkBookAvailableRequest) returns (BookResponse);
+  rpc MarkBookUnavailable(MarkBookUnavailableRequest) returns (BookResponse);
+  rpc GetBookStats(GetBookStatsRequest) returns (BookStatsResponse);
+}
+
+message Book {
+  int32 id = 1;
+  string title = 2;
+  string author = 3;
+  string category = 4;
+  bool available = 5;
+  string created_at = 6;
+}
+message BookResponse {
+  Book book = 1;
+}
+
+message CreateBookRequest {
+  string title = 1;
+  string author = 2;
+  string category = 3;
+  bool available = 4;
+}
+
+message GetBookByIDRequest {
+  int32 id = 1;
+}
+
+message ListBooksRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message ListBooksResponse {
+  repeated Book books = 1;
+}
+
+message UpdateBookRequest {
+  int32 id = 1;
+  string title = 2;
+  string author = 3;
+  string category = 4;
+  bool available = 5;
+}
+
+message DeleteBookRequest {
+  int32 id = 1;
+}
+
+message DeleteBookResponse {
+  string message = 1;
+}
+
+message SearchBooksRequest {
+  string query = 1;
+}
+
+message ListBooksByAuthorRequest {
+  string author = 1;
+}
+
+message ListBooksByCategoryRequest {
+  string category = 1;
+}
+
+message CheckBookAvailabilityRequest {
+  int32 id = 1;
+}
+
+message AvailabilityResponse {
+  int32 book_id = 1;
+  bool available = 2;
+}
+
+message MarkBookAvailableRequest {
+  int32 id = 1;
+}
+
+message MarkBookUnavailableRequest {
+  int32 id = 1;
+}
+
+message GetBookStatsRequest {}
+
+message BookStatsResponse {
+  int32 total_books = 1;
+  int32 available_books = 2;
+  int32 unavailable_books = 3;
+}

@@ -1,0 +1,14 @@
+.env
+bin/
+tmp/
+vendor/
+
+*.exe
+*.dll
+*.so
+*.dylib
+
+.idea/
+.vscode/
+
+docker-data/
