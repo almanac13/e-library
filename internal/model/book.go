@@ -1,16 +1,16 @@
 package model
 
-import(
+import (
 	"time"
 )
 
-type Book struct{
-	ID			string `json:"id"`
-	Title		string `json:"title"`
-	Author		string `json:"author"`
-	Category	string `json:"category"`
-	Available	bool `json:""available"`
-	CreatedAt	time.Time `json:"created_at"`
+type Book struct {
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
+	Author    string    `json:"author"`
+	Category  string    `json:"category"`
+	Available bool      `json:""available"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type CreateBookRequest struct {
@@ -25,4 +25,10 @@ type UpdateBookRequest struct {
 	Author    string `json:"author"`
 	Category  string `json:"category"`
 	Available bool   `json:"available"`
+}
+
+type BookStats struct {
+	TotalBooks       int
+	AvailableBooks   int
+	UnavailableBooks int
 }

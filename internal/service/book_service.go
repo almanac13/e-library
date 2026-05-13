@@ -72,3 +72,65 @@ func (s *BookService) FindByAuthor(author string) ([]model.Book, error) {
 
 	return s.repo.FindByAuthor(author)
 }
+func (s *BookService) Search(query string) ([]model.Book, error) {
+	if query == "" {
+		return nil, errors.New("search query is required")
+	}
+
+	return s.repo.Search(query)
+}
+
+func (s *BookService) ListByAuthor(author string) ([]model.Book, error) {
+	if author == "" {
+		return nil, errors.New("author is required")
+	}
+
+	return s.repo.FindByAuthor(author)
+}
+
+func (s *BookService) ListByCategory(category string) ([]model.Book, error) {
+	if category == "" {
+		return nil, errors.New("category is required")
+	}
+
+	return s.repo.FindByCategory(category)
+}
+
+func (s *BookService) CheckAvailability(id int) (bool, error) {
+	book, err := s.GetByID(id)
+	if err != nil {
+		return false, err
+	}
+
+	return book.Available, nil
+}
+
+func (s *BookService) MarkAvailable(id int) (*model.Book, error) {
+	book, err := s.repo.UpdateAvailability(id, true)
+	if err != nil {
+		return nil, err
+	}
+
+	if book == nil {
+		return nil, errors.New("book not found")
+	}
+
+	return book, nil
+}
+
+func (s *BookService) MarkUnavailable(id int) (*model.Book, error) {
+	book, err := s.repo.UpdateAvailability(id, false)
+	if err != nil {
+		return nil, err
+	}
+
+	if book == nil {
+		return nil, errors.New("book not found")
+	}
+
+	return book, nil
+}
+
+func (s *BookService) GetStats() (*model.BookStats, error) {
+	return s.repo.GetStats()
+}

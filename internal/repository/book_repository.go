@@ -232,3 +232,133 @@ func (r *BookRepository) FindByAuthor(author string) ([]model.Book, error) {
 
 	return books, nil
 }
+
+func (r *BookRepository) FindByCategory(category string) ([]model.Book, error) {
+	rows, err := r.db.Query(`
+		SELECT id, title, author, category, available, created_at
+		FROM books
+		WHERE category ILIKE '%' || $1 || '%'
+		ORDER BY id
+	`, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	books := make([]model.Book, 0)
+
+	for rows.Next() {
+		var book model.Book
+
+		err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Author,
+			&book.Category,
+			&book.Available,
+			&book.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (r *BookRepository) Search(query string) ([]model.Book, error) {
+	rows, err := r.db.Query(`
+		SELECT id, title, author, category, available, created_at
+		FROM books
+		WHERE title ILIKE '%' || $1 || '%'
+		   OR author ILIKE '%' || $1 || '%'
+		   OR category ILIKE '%' || $1 || '%'
+		ORDER BY id
+	`, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	books := make([]model.Book, 0)
+
+	for rows.Next() {
+		var book model.Book
+
+		err := rows.Scan(
+			&book.ID,
+			&book.Title,
+			&book.Author,
+			&book.Category,
+			&book.Available,
+			&book.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (r *BookRepository) UpdateAvailability(id int, available bool) (*model.Book, error) {
+	var book model.Book
+
+	err := r.db.QueryRow(`
+		UPDATE books
+		SET available = $1
+		WHERE id = $2
+		RETURNING id, title, author, category, available, created_at
+	`, available, id).Scan(
+		&book.ID,
+		&book.Title,
+		&book.Author,
+		&book.Category,
+		&book.Available,
+		&book.CreatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &book, nil
+}
+
+func (r *BookRepository) GetStats() (*model.BookStats, error) {
+	var stats model.BookStats
+
+	err := r.db.QueryRow(`
+		SELECT
+			COUNT(*) AS total_books,
+			COUNT(*) FILTER (WHERE available = true) AS available_books,
+			COUNT(*) FILTER (WHERE available = false) AS unavailable_books
+		FROM books
+	`).Scan(
+		&stats.TotalBooks,
+		&stats.AvailableBooks,
+		&stats.UnavailableBooks,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
+}
