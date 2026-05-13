@@ -1,11 +1,14 @@
-# Go
-bin/
+.env
 *.exe
-*.out
+*.dll
+*.so
+*.dylib
 
-# IDE
-.vscode/
+bin/
+tmp/
+vendor/
+
 .idea/
+.vscode/
 
-# OS
-.DS_Store
+*_data/
