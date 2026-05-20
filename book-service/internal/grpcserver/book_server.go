@@ -2,6 +2,7 @@ package grpcserver
 
 import (
 	"context"
+	"log"
 
 	"github.com/almanac13/e-library/book-service/gen/bookpb"
 	"github.com/almanac13/e-library/book-service/internal/model"
@@ -32,9 +33,7 @@ func (s *BookGRPCServer) CreateBook(ctx context.Context, req *bookpb.CreateBookR
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &bookpb.BookResponse{
-		Book: toProtoBook(book),
-	}, nil
+	return &bookpb.BookResponse{Book: toProtoBook(book)}, nil
 }
 
 func (s *BookGRPCServer) GetBookByID(ctx context.Context, req *bookpb.GetBookByIDRequest) (*bookpb.BookResponse, error) {
@@ -47,14 +46,13 @@ func (s *BookGRPCServer) GetBookByID(ctx context.Context, req *bookpb.GetBookByI
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
-	return &bookpb.BookResponse{
-		Book: toProtoBook(book),
-	}, nil
+	return &bookpb.BookResponse{Book: toProtoBook(book)}, nil
 }
 
 func (s *BookGRPCServer) ListBooks(ctx context.Context, req *bookpb.ListBooksRequest) (*bookpb.ListBooksResponse, error) {
 	books, err := s.service.GetAll()
 	if err != nil {
+		log.Println("failed to get books:", err)
 		return nil, status.Error(codes.Internal, "failed to get books")
 	}
 
@@ -76,9 +74,7 @@ func (s *BookGRPCServer) UpdateBook(ctx context.Context, req *bookpb.UpdateBookR
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &bookpb.BookResponse{
-		Book: toProtoBook(book),
-	}, nil
+	return &bookpb.BookResponse{Book: toProtoBook(book)}, nil
 }
 
 func (s *BookGRPCServer) DeleteBook(ctx context.Context, req *bookpb.DeleteBookRequest) (*bookpb.DeleteBookResponse, error) {
@@ -94,6 +90,7 @@ func (s *BookGRPCServer) DeleteBook(ctx context.Context, req *bookpb.DeleteBookR
 		Message: "book deleted successfully",
 	}, nil
 }
+
 func (s *BookGRPCServer) SearchBooks(ctx context.Context, req *bookpb.SearchBooksRequest) (*bookpb.ListBooksResponse, error) {
 	books, err := s.service.Search(req.GetQuery())
 	if err != nil {
@@ -147,9 +144,7 @@ func (s *BookGRPCServer) MarkBookAvailable(ctx context.Context, req *bookpb.Mark
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
-	return &bookpb.BookResponse{
-		Book: toProtoBook(book),
-	}, nil
+	return &bookpb.BookResponse{Book: toProtoBook(book)}, nil
 }
 
 func (s *BookGRPCServer) MarkBookUnavailable(ctx context.Context, req *bookpb.MarkBookUnavailableRequest) (*bookpb.BookResponse, error) {
@@ -162,14 +157,13 @@ func (s *BookGRPCServer) MarkBookUnavailable(ctx context.Context, req *bookpb.Ma
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
-	return &bookpb.BookResponse{
-		Book: toProtoBook(book),
-	}, nil
+	return &bookpb.BookResponse{Book: toProtoBook(book)}, nil
 }
 
 func (s *BookGRPCServer) GetBookStats(ctx context.Context, req *bookpb.GetBookStatsRequest) (*bookpb.BookStatsResponse, error) {
 	stats, err := s.service.GetStats()
 	if err != nil {
+		log.Println("failed to get book stats:", err)
 		return nil, status.Error(codes.Internal, "failed to get book stats")
 	}
 
@@ -192,6 +186,7 @@ func toProtoBookList(books []model.Book) *bookpb.ListBooksResponse {
 		Books: protoBooks,
 	}
 }
+
 func toProtoBook(book *model.Book) *bookpb.Book {
 	return &bookpb.Book{
 		Id:        int32(book.ID),

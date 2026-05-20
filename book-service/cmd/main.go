@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/almanac13/e-library/book-service/gen/bookpb"
+	"github.com/almanac13/e-library/book-service/internal/cache"
 	"github.com/almanac13/e-library/book-service/internal/db"
 	"github.com/almanac13/e-library/book-service/internal/grpcserver"
 	"github.com/almanac13/e-library/book-service/internal/handler"
@@ -27,8 +28,11 @@ func main() {
 	}
 	defer database.Close()
 
+	redisCache := cache.NewRedisCache()
+	defer redisCache.Close()
+
 	bookRepo := repository.NewBookRepository(database)
-	bookService := service.NewBookService(bookRepo)
+	bookService := service.NewBookService(bookRepo, redisCache)
 
 	bookHandler := handler.NewBookHandler(bookService)
 	bookGRPCServer := grpcserver.NewBookGRPCServer(bookService)
