@@ -7,6 +7,7 @@ import (
 
 	"borrow-service/gen/borrowpb"
 	"borrow-service/internal/db"
+	"borrow-service/internal/events"
 	borrowgrpc "borrow-service/internal/grpc"
 	"borrow-service/internal/handler"
 	"borrow-service/internal/repository"
@@ -28,7 +29,15 @@ func main() {
 	}
 
 	borrowRepo := repository.NewBorrowRepository(database)
-	borrowService := service.NewBorrowService(borrowRepo)
+
+	publisher := events.NewPublisher()
+	defer publisher.Close()
+
+	borrowService := service.NewBorrowService(
+		borrowRepo,
+		publisher,
+	)
+
 	borrowHandler := handler.NewBorrowHandler(borrowService)
 
 	go startGRPCServer(borrowService)

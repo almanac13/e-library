@@ -1,6 +1,7 @@
 package service
 
 import (
+	"borrow-service/internal/events"
 	"borrow-service/internal/model"
 	"borrow-service/internal/repository"
 	"time"
@@ -9,7 +10,8 @@ import (
 )
 
 type BorrowService struct {
-	repo *repository.BorrowRepository
+	repo      *repository.BorrowRepository
+	publisher *events.Publisher
 }
 
 type CreateBorrowRequest struct {
@@ -17,8 +19,14 @@ type CreateBorrowRequest struct {
 	BookID string `json:"book_id" binding:"required"`
 }
 
-func NewBorrowService(repo *repository.BorrowRepository) *BorrowService {
-	return &BorrowService{repo: repo}
+func NewBorrowService(
+	repo *repository.BorrowRepository,
+	publisher *events.Publisher,
+) *BorrowService {
+	return &BorrowService{
+		repo:      repo,
+		publisher: publisher,
+	}
 }
 
 func (s *BorrowService) CreateBorrow(req CreateBorrowRequest) (*model.Borrow, error) {
@@ -40,6 +48,13 @@ func (s *BorrowService) CreateBorrow(req CreateBorrowRequest) (*model.Borrow, er
 		return nil, err
 	}
 
+	if s.publisher != nil {
+		s.publisher.Publish(
+			"borrow.created",
+			borrow,
+		)
+	}
+
 	return borrow, nil
 }
 
@@ -52,5 +67,17 @@ func (s *BorrowService) GetBorrowByID(id string) (*model.Borrow, error) {
 }
 
 func (s *BorrowService) ReturnBorrow(id string) (*model.Borrow, error) {
-	return s.repo.ReturnBorrow(id, time.Now())
+	borrow, err := s.repo.ReturnBorrow(id, time.Now())
+	if err != nil {
+		return nil, err
+	}
+
+	if s.publisher != nil {
+		s.publisher.Publish(
+			"borrow.returned",
+			borrow,
+		)
+	}
+
+	return borrow, nil
 }

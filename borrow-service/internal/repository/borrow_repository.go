@@ -2,6 +2,7 @@ package repository
 
 import (
 	"borrow-service/internal/model"
+	"context"
 	"database/sql"
 	"time"
 )
@@ -15,13 +16,31 @@ func NewBorrowRepository(db *sql.DB) *BorrowRepository {
 }
 
 func (r *BorrowRepository) Create(borrow *model.Borrow) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := r.createWithTx(ctx, tx, borrow); err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *BorrowRepository) createWithTx(ctx context.Context, tx *sql.Tx, borrow *model.Borrow) error {
 	query := `
 		INSERT INTO borrows 
 		(id, user_id, book_id, borrow_date, due_date, return_date, status, created_at, updated_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 	`
 
-	_, err := r.db.Exec(
+	_, err := tx.ExecContext(
+		ctx,
 		query,
 		borrow.ID,
 		borrow.UserID,
@@ -75,6 +94,7 @@ func (r *BorrowRepository) GetAll() ([]model.Borrow, error) {
 
 	return borrows, rows.Err()
 }
+
 func (r *BorrowRepository) GetByID(id string) (*model.Borrow, error) {
 	query := `
 		SELECT id, user_id, book_id, borrow_date, due_date, return_date, status, created_at, updated_at
@@ -104,6 +124,28 @@ func (r *BorrowRepository) GetByID(id string) (*model.Borrow, error) {
 }
 
 func (r *BorrowRepository) ReturnBorrow(id string, returnDate time.Time) (*model.Borrow, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	borrow, err := r.returnBorrowWithTx(ctx, tx, id, returnDate)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return borrow, nil
+}
+
+func (r *BorrowRepository) returnBorrowWithTx(ctx context.Context, tx *sql.Tx, id string, returnDate time.Time) (*model.Borrow, error) {
 	query := `
 		UPDATE borrows
 		SET return_date = $1, status = $2, updated_at = $3
@@ -114,7 +156,8 @@ func (r *BorrowRepository) ReturnBorrow(id string, returnDate time.Time) (*model
 	var borrow model.Borrow
 	now := time.Now()
 
-	err := r.db.QueryRow(
+	err := tx.QueryRowContext(
+		ctx,
 		query,
 		returnDate,
 		model.BorrowStatusReturned,

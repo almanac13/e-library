@@ -74,8 +74,10 @@ services:
       HTTP_PORT: 8089
       GRPC_PORT: 50053
       BORROW_DB_URL: postgres://postgres:postgres@postgres-borrows:5432/elibrary_borrows?sslmode=disable
+      NATS_URL: nats://nats:4222
     depends_on:
       - postgres-borrows
+      - nats
 
   api-gateway:
     build:
@@ -98,6 +100,29 @@ services:
     container_name: elib-redis
     ports:
       - "6379:6379"
+
+  nats:
+    image: nats:latest
+    container_name: elib-nats
+    ports:
+      - "4222:4222"
+   
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: notification-service
+    environment:
+      NATS_URL: nats://nats:4222
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: your_email@gmail.com
+      SMTP_PASSWORD: your_app_password
+      SMTP_FROM: your_email@gmail.com
+      SMTP_TO: your_email@gmail.com
+      SMTP_ENABLED: "false"
+    depends_on:
+      - nats
+      - borrow-service
 
 volumes:
   postgres_users_data:
