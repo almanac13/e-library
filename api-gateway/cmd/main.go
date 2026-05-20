@@ -11,6 +11,7 @@ import (
 	"api-gateway/gen/borrowpb"
 	"api-gateway/gen/userpb"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -38,6 +39,12 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+	}))
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "api-gateway is running"})
