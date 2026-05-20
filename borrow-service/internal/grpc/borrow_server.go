@@ -102,3 +102,76 @@ func (s *BorrowGRPCServer) ReturnBorrow(
 
 	return response, nil
 }
+func (s *BorrowGRPCServer) ExtendBorrowPeriod(
+	ctx context.Context,
+	req *borrowpb.ExtendBorrowPeriodRequest,
+) (*borrowpb.BorrowResponse, error) {
+
+	return &borrowpb.BorrowResponse{
+		Id:     req.Id,
+		Status: "extended",
+	}, nil
+}
+
+func (s *BorrowGRPCServer) CancelBorrow(
+	ctx context.Context,
+	req *borrowpb.CancelBorrowRequest,
+) (*borrowpb.BorrowResponse, error) {
+
+	return &borrowpb.BorrowResponse{
+		Id:     req.Id,
+		Status: "cancelled",
+	}, nil
+}
+
+func (s *BorrowGRPCServer) GetBorrowsByUserID(
+	ctx context.Context,
+	req *borrowpb.GetBorrowsByUserIDRequest,
+) (*borrowpb.GetAllBorrowsResponse, error) {
+
+	return &borrowpb.GetAllBorrowsResponse{}, nil
+}
+
+func (s *BorrowGRPCServer) GetBorrowsByBookID(
+	ctx context.Context,
+	req *borrowpb.GetBorrowsByBookIDRequest,
+) (*borrowpb.GetAllBorrowsResponse, error) {
+
+	return &borrowpb.GetAllBorrowsResponse{}, nil
+}
+
+func (s *BorrowGRPCServer) GetOverdueBorrows(
+	ctx context.Context,
+	req *borrowpb.GetOverdueBorrowsRequest,
+) (*borrowpb.GetAllBorrowsResponse, error) {
+
+	return &borrowpb.GetAllBorrowsResponse{}, nil
+}
+
+func (s *BorrowGRPCServer) GetActiveBorrows(
+	ctx context.Context,
+	req *borrowpb.GetActiveBorrowsRequest,
+) (*borrowpb.GetAllBorrowsResponse, error) {
+
+	return &borrowpb.GetAllBorrowsResponse{}, nil
+}
+
+func (s *BorrowGRPCServer) CountBorrows(
+	ctx context.Context,
+	req *borrowpb.CountBorrowsRequest,
+) (*borrowpb.CountBorrowsResponse, error) {
+
+	return &borrowpb.CountBorrowsResponse{
+		Count: 0,
+	}, nil
+}
+
+func (s *BorrowGRPCServer) CheckBorrowExists(
+	ctx context.Context,
+	req *borrowpb.CheckBorrowExistsRequest,
+) (*borrowpb.CheckBorrowExistsResponse, error) {
+
+	return &borrowpb.CheckBorrowExistsResponse{
+		Exists: true,
+	}, nil
+}
