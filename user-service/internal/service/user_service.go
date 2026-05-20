@@ -42,8 +42,7 @@ func (s *UserService) Register(name, email, password, role string) (*model.User,
 		Role:     role,
 	}
 
-	err := s.repo.CreateUser(user)
-	if err != nil {
+	if err := s.repo.CreateUser(user); err != nil {
 		return nil, err
 	}
 
@@ -72,13 +71,53 @@ func (s *UserService) Login(email, password string) (*model.User, error) {
 }
 
 func (s *UserService) GetUserByID(id string) (*model.User, error) {
-	if strings.TrimSpace(id) == "" {
-		return nil, errors.New("user id is required")
+	return s.repo.GetUserByID(id)
+}
+
+func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+	return s.repo.GetUserByEmail(email)
+}
+
+func (s *UserService) GetAllUsers() ([]model.User, error) {
+	return s.repo.GetAllUsers()
+}
+
+func (s *UserService) UpdateUserName(id, name string) (*model.User, error) {
+	if err := s.repo.UpdateUserName(id, name); err != nil {
+		return nil, err
 	}
 
 	return s.repo.GetUserByID(id)
 }
 
-func (s *UserService) GetAllUsers() ([]model.User, error) {
-	return s.repo.GetAllUsers()
+func (s *UserService) UpdateUserRole(id, role string) (*model.User, error) {
+	if role != "student" && role != "admin" {
+		return nil, errors.New("invalid role")
+	}
+
+	if err := s.repo.UpdateUserRole(id, role); err != nil {
+		return nil, err
+	}
+
+	return s.repo.GetUserByID(id)
+}
+
+func (s *UserService) ChangePassword(id, password string) error {
+	return s.repo.ChangePassword(id, password)
+}
+
+func (s *UserService) DeleteUser(id string) error {
+	return s.repo.DeleteUser(id)
+}
+
+func (s *UserService) CheckUserExists(id string) (bool, error) {
+	return s.repo.UserExists(id)
+}
+
+func (s *UserService) CountUsers() (int, error) {
+	return s.repo.CountUsers()
+}
+
+func (s *UserService) GetUsersByRole(role string) ([]model.User, error) {
+	return s.repo.GetUsersByRole(role)
 }

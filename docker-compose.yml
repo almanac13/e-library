@@ -11,5 +11,31 @@ services:
     volumes:
       - postgres_users_data:/var/lib/postgresql/data
 
+  postgres-books:
+    image: postgres:16
+    container_name: elib-postgres-books
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: elibrary_books
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_books_data:/var/lib/postgresql/data
+
+  postgres-borrows:
+    image: postgres:16
+    container_name: elib-postgres-borrows
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: elibrary_borrows
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_borrows_data:/var/lib/postgresql/data
+
 volumes:
   postgres_users_data:
+  postgres_books_data:
+  postgres_borrows_data:

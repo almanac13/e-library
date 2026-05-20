@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./gen/userpb";
+
+service UserService {
+  rpc RegisterUser(RegisterRequest) returns (UserResponse);
+  rpc LoginUser(LoginRequest) returns (LoginResponse);
+  rpc GetUserByID(GetUserByIDRequest) returns (UserResponse);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (UserResponse);
+  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
+  rpc UpdateUserName(UpdateUserNameRequest) returns (UserResponse);
+  rpc UpdateUserRole(UpdateUserRoleRequest) returns (UserResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (MessageResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (MessageResponse);
+  rpc CheckUserExists(CheckUserExistsRequest) returns (CheckUserExistsResponse);
+  rpc CountUsers(CountUsersRequest) returns (CountUsersResponse);
+  rpc GetUsersByRole(GetUsersByRoleRequest) returns (GetAllUsersResponse);
+}
+
+message RegisterRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+  string role = 4;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string message = 1;
+  UserResponse user = 2;
+}
+
+message GetUserByIDRequest {
+  string id = 1;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetAllUsersRequest {}
+
+message UpdateUserNameRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message UpdateUserRoleRequest {
+  string id = 1;
+  string role = 2;
+}
+
+message ChangePasswordRequest {
+  string id = 1;
+  string password = 2;
+}
+
+message DeleteUserRequest {
+  string id = 1;
+}
+
+message CheckUserExistsRequest {
+  string id = 1;
+}
+
+message CheckUserExistsResponse {
+  bool exists = 1;
+}
+
+message CountUsersRequest {}
+
+message CountUsersResponse {
+  int32 count = 1;
+}
+
+message GetUsersByRoleRequest {
+  string role = 1;
+}
+
+message MessageResponse {
+  string message = 1;
+}
+
+message UserResponse {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string role = 4;
+  string created_at = 5;
+}
+
+message GetAllUsersResponse {
+  repeated UserResponse users = 1;
+}

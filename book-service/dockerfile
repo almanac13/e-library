@@ -17,6 +17,6 @@ COPY --from=builder /app/book-service .
 COPY .env .
 
 EXPOSE 8088
-EXPOSE 50051
+EXPOSE 50052
 
 CMD ["./book-service"]
