@@ -2,15 +2,19 @@ package main
 
 import (
 	"log"
+	"net"
 	"os"
 
+	"borrow-service/gen/borrowpb"
 	"borrow-service/internal/db"
+	borrowgrpc "borrow-service/internal/grpc"
 	"borrow-service/internal/handler"
 	"borrow-service/internal/repository"
 	"borrow-service/internal/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -27,6 +31,8 @@ func main() {
 	borrowService := service.NewBorrowService(borrowRepo)
 	borrowHandler := handler.NewBorrowHandler(borrowService)
 
+	go startGRPCServer(borrowService)
+
 	router := gin.Default()
 
 	router.POST("/borrows", borrowHandler.CreateBorrow)
@@ -42,6 +48,31 @@ func main() {
 	log.Println("borrow-service HTTP started on port " + port)
 
 	err = router.Run(":" + port)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func startGRPCServer(borrowService *service.BorrowService) {
+	port := os.Getenv("GRPC_PORT")
+	if port == "" {
+		port = "50053"
+	}
+
+	listener, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	grpcServer := grpc.NewServer()
+	borrowpb.RegisterBorrowServiceServer(
+		grpcServer,
+		borrowgrpc.NewBorrowGRPCServer(borrowService),
+	)
+
+	log.Println("borrow-service gRPC started on port " + port)
+
+	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatal(err)
 	}

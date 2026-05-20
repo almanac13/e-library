@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package borrow;
+
+option go_package = "borrow-service/gen/borrowpb";
+
+service BorrowService {
+  rpc GetBorrow(GetBorrowRequest) returns (BorrowResponse);
+  rpc GetAllBorrows(GetAllBorrowsRequest) returns (GetAllBorrowsResponse);
+  rpc ReturnBorrow(ReturnBorrowRequest) returns (BorrowResponse);
+}
+
+message GetBorrowRequest {
+  string id = 1;
+}
+
+message GetAllBorrowsRequest {}
+
+message ReturnBorrowRequest {
+  string id = 1;
+}
+
+message BorrowResponse {
+  string id = 1;
+  string user_id = 2;
+  string book_id = 3;
+  string borrow_date = 4;
+  string due_date = 5;
+  string return_date = 6;
+  string status = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message GetAllBorrowsResponse {
+  repeated BorrowResponse borrows = 1;
+}
