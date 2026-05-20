@@ -14,14 +14,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
+	_ = godotenv.Load()
 
 	database := db.Connect()
 
-	err = repository.RunMigration(database)
+	err := repository.RunMigration(database)
 	if err != nil {
 		log.Fatal(err)
 	}
