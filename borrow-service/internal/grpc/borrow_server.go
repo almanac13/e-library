@@ -161,8 +161,13 @@ func (s *BorrowGRPCServer) CountBorrows(
 	req *borrowpb.CountBorrowsRequest,
 ) (*borrowpb.CountBorrowsResponse, error) {
 
+	borrows, err := s.service.GetAllBorrows()
+	if err != nil {
+		return nil, err
+	}
+
 	return &borrowpb.CountBorrowsResponse{
-		Count: 0,
+		Count: int32(len(borrows)),
 	}, nil
 }
 
