@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package borrow;
+
+option go_package = "borrow-service/gen/borrowpb";
+
+service BorrowService {
+  rpc CreateBorrow(CreateBorrowRequest) returns (BorrowResponse);
+  rpc GetBorrow(GetBorrowRequest) returns (BorrowResponse);
+  rpc GetAllBorrows(GetAllBorrowsRequest) returns (GetAllBorrowsResponse);
+  rpc ReturnBorrow(ReturnBorrowRequest) returns (BorrowResponse);
+
+  rpc ExtendBorrowPeriod(ExtendBorrowPeriodRequest) returns (BorrowResponse);
+  rpc CancelBorrow(CancelBorrowRequest) returns (BorrowResponse);
+  rpc GetBorrowsByUserID(GetBorrowsByUserIDRequest) returns (GetAllBorrowsResponse);
+  rpc GetBorrowsByBookID(GetBorrowsByBookIDRequest) returns (GetAllBorrowsResponse);
+  rpc GetOverdueBorrows(GetOverdueBorrowsRequest) returns (GetAllBorrowsResponse);
+  rpc GetActiveBorrows(GetActiveBorrowsRequest) returns (GetAllBorrowsResponse);
+  rpc CountBorrows(CountBorrowsRequest) returns (CountBorrowsResponse);
+  rpc CheckBorrowExists(CheckBorrowExistsRequest) returns (CheckBorrowExistsResponse);
+}
+
+message CreateBorrowRequest {
+  string user_id = 1;
+  string book_id = 2;
+  string due_date = 3;
+}
+
+message GetBorrowRequest {
+  string id = 1;
+}
+
+message GetAllBorrowsRequest {}
+
+message ReturnBorrowRequest {
+  string id = 1;
+}
+
+message ExtendBorrowPeriodRequest {
+  string id = 1;
+  string new_due_date = 2;
+}
+
+message CancelBorrowRequest {
+  string id = 1;
+}
+
+message GetBorrowsByUserIDRequest {
+  string user_id = 1;
+}
+
+message GetBorrowsByBookIDRequest {
+  string book_id = 1;
+}
+
+message GetOverdueBorrowsRequest {}
+
+message GetActiveBorrowsRequest {}
+
+message CountBorrowsRequest {}
+
+message CountBorrowsResponse {
+  int32 count = 1;
+}
+
+message CheckBorrowExistsRequest {
+  string id = 1;
+}
+
+message CheckBorrowExistsResponse {
+  bool exists = 1;
+}
+
+message BorrowResponse {
+  string id = 1;
+  string user_id = 2;
+  string book_id = 3;
+  string borrow_date = 4;
+  string due_date = 5;
+  string return_date = 6;
+  string status = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message GetAllBorrowsResponse {
+  repeated BorrowResponse borrows = 1;
+}
