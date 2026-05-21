@@ -317,7 +317,9 @@ func (s *Server) CountUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, gin.H{
+		"count": res.GetCount(),
+	})
 }
 
 func (s *Server) GetUsersByRole(c *gin.Context) {
@@ -727,7 +729,9 @@ func (s *Server) CountBorrows(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, gin.H{
+		"count": res.GetCount(),
+	})
 }
 
 func (s *Server) CheckBorrowExists(c *gin.Context) {
