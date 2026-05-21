@@ -180,3 +180,27 @@ func (s *BorrowGRPCServer) CheckBorrowExists(
 		Exists: true,
 	}, nil
 }
+func (s *BorrowGRPCServer) CreateBorrow(
+	ctx context.Context,
+	req *borrowpb.CreateBorrowRequest,
+) (*borrowpb.BorrowResponse, error) {
+
+	borrow, err := s.service.CreateBorrow(service.CreateBorrowRequest{
+		UserID: req.UserId,
+		BookID: req.BookId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &borrowpb.BorrowResponse{
+		Id:         borrow.ID,
+		UserId:     borrow.UserID,
+		BookId:     borrow.BookID,
+		BorrowDate: borrow.BorrowDate.String(),
+		DueDate:    borrow.DueDate.String(),
+		Status:     borrow.Status,
+		CreatedAt:  borrow.CreatedAt.String(),
+		UpdatedAt:  borrow.UpdatedAt.String(),
+	}, nil
+}

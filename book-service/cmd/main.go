@@ -28,6 +28,10 @@ func main() {
 	}
 	defer database.Close()
 
+	if err := repository.RunMigration(database); err != nil {
+		log.Fatal("failed to run migration:", err)
+	}
+
 	redisCache := cache.NewRedisCache()
 	defer redisCache.Close()
 
@@ -62,12 +66,12 @@ func main() {
 	})
 
 	http.HandleFunc("/books/search", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
+		if r.Method == http.MethodGet {
 			bookHandler.SearchBooks(w, r)
-		default:
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
 		}
+
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	})
 
 	grpcPort := os.Getenv("GRPC_PORT")
