@@ -1,6 +1,7 @@
+
 # E-Library Microservices Project
 
-## Postman API Testing Report
+## gRPC Endpoint Testing Report
 
 **Team Members:**
 Bekbolat — User Service
@@ -8,47 +9,40 @@ Nurassyl — Book Service
 Nurkhan — Borrow Service
 
 **Project:** E-Library Microservices System
-**Testing Tool:** Postman
-**Backend:** Go + PostgreSQL + Docker + gRPC + API Gateway
-**Base URL:**
-
-```txt
-http://localhost:8080/api
-```
-
-**Total tested endpoints:** 36
+**Testing Tool:** Postman gRPC / grpcurl
+**Backend:** Go + PostgreSQL + gRPC + Docker
+**Total tested methods:** 36
 
 ---
 
 # 1. Purpose
 
-The purpose of this report is to test and validate all API endpoints of the E-Library Microservices System using Postman.
+The purpose of this report is to test all gRPC methods of the E-Library system.
 
-The system contains three microservices:
-
-* User Service
-* Book Service
-* Borrow Service
-
-Each service contains 12 endpoints.
-
-Total:
+System architecture:
 
 ```txt
-36 endpoints tested
+Frontend
+     ↓
+API Gateway
+     ↓
+gRPC
+ ┌──────────────┬──────────────┬─────────────┐
+ │User Service  │Book Service │Borrow Service
+ └──────────────┴──────────────┴─────────────┘
 ```
 
 ---
 
-# 2. Testing Environment
+# 2. Environment
 
-Operating System:
+OS:
 
 ```txt
 Windows 11
 ```
 
-Backend:
+Language:
 
 ```txt
 Go
@@ -60,76 +54,44 @@ Database:
 PostgreSQL
 ```
 
-Containerization:
+Testing:
 
 ```txt
-Docker + Docker Compose
+Postman gRPC
 ```
 
-Testing Tool:
+Ports:
 
 ```txt
-Postman
-```
-
-API Gateway:
-
-```txt
-localhost:8080
+User Service: 50051
+Book Service: 50052
+Borrow Service: 50053
 ```
 
 ---
 
-# 3. User Service Testing
+# 3. User Service gRPC Testing
 
-## Endpoint 1
-
-Method:
-
-```txt
-POST
-```
-
-URL:
-
-```txt
-/api/users/register
-```
-
-Raw JSON:
+### RegisterUser
 
 ```json
 {
-  "name": "Test User",
-  "email": "test@test.com",
-  "password": "123456",
-  "role": "student"
+  "name":"Test User",
+  "email":"test@test.com",
+  "password":"123456",
+  "role":"student"
 }
 ```
 
 Expected:
 
 ```txt
-201 Created
+User created successfully
 ```
 
 ---
 
-## Endpoint 2
-
-Method:
-
-```txt
-POST
-```
-
-URL:
-
-```txt
-/api/users/login
-```
-
-Raw JSON:
+### LoginUser
 
 ```json
 {
@@ -138,307 +100,135 @@ Raw JSON:
 }
 ```
 
-Expected:
-
-```txt
-200 OK
-```
-
 ---
 
-## Endpoint 3
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users
-```
-
-Body:
-
-```txt
-No body
-```
-
-Expected:
-
-```txt
-200 OK
-```
-
----
-
-## Endpoint 4
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users/{id}
-```
-
-Body:
-
-```txt
-No body
-```
-
----
-
-## Endpoint 5
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/users/{id}
-```
-
-Raw JSON:
+### GetUser
 
 ```json
 {
+   "id":"1"
+}
+```
+
+---
+
+### GetAllUsers
+
+```json
+{}
+```
+
+---
+
+### UpdateUser
+
+```json
+{
+ "id":"1",
  "name":"Updated User"
 }
 ```
 
 ---
 
-## Endpoint 6
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/users/{id}/role
-```
-
-Raw JSON:
+### UpdateRole
 
 ```json
 {
+ "id":"1",
  "role":"admin"
 }
 ```
 
 ---
 
-## Endpoint 7
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/users/{id}/password
-```
-
-Raw JSON:
+### UpdatePassword
 
 ```json
 {
+ "id":"1",
  "password":"newpassword123"
 }
 ```
 
 ---
 
-## Endpoint 8
-
-Method:
-
-```txt
-DELETE
-```
-
-URL:
-
-```txt
-/api/users/{id}
-```
-
-Body:
-
-```txt
-No body
-```
-
----
-
-## Endpoint 9
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users/email/test@test.com
-```
-
----
-
-## Endpoint 10
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users/role/student
-```
-
----
-
-## Endpoint 11
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users/count
-```
-
----
-
-## Endpoint 12
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/users/exists/{id}
-```
-
----
-
-# 4. Book Service Testing
-
-## Endpoint 13
-
-Method:
-
-```txt
-POST
-```
-
-URL:
-
-```txt
-/api/books
-```
-
-Raw JSON:
+### DeleteUser
 
 ```json
 {
-  "title":"Clean Code",
-  "author":"Robert C Martin",
-  "category":"Programming",
-  "available":"Yes"
+ "id":"1"
 }
 ```
 
-Expected:
-
-```txt
-201 Created
-```
-
 ---
 
-## Endpoint 14
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books
-```
-
----
-
-## Endpoint 15
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/{id}
-```
-
----
-
-## Endpoint 16
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/books/{id}
-```
-
-Raw JSON:
+### GetUsersByRole
 
 ```json
 {
+ "role":"student"
+}
+```
+
+---
+
+### CountUsers
+
+```json
+{}
+```
+
+---
+
+### CheckUserExists
+
+```json
+{
+ "id":"1"
+}
+```
+
+---
+
+# 4. Book Service gRPC Testing
+
+### CreateBook
+
+```json
+{
+ "title":"Clean Code",
+ "author":"Robert C Martin",
+ "category":"Programming",
+ "available":"Yes"
+}
+```
+
+---
+
+### GetBook
+
+```json
+{
+ "id":"3"
+}
+```
+
+---
+
+### GetAllBooks
+
+```json
+{}
+```
+
+---
+
+### UpdateBook
+
+```json
+{
+ "id":"3",
  "title":"Clean Code Updated",
  "author":"Robert Martin",
  "category":"Software Engineering"
@@ -447,167 +237,45 @@ Raw JSON:
 
 ---
 
-## Endpoint 17
-
-Method:
-
-```txt
-DELETE
-```
-
-URL:
-
-```txt
-/api/books/{id}
-```
-
----
-
-## Endpoint 18
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/search?q=clean
-```
-
----
-
-## Endpoint 19
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/category/Programming
-```
-
----
-
-## Endpoint 20
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/books/{id}/available
-```
-
-Raw JSON:
+### DeleteBook
 
 ```json
 {
- "available":"Yes"
+ "id":"3"
 }
 ```
 
 ---
 
-## Endpoint 21
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/books/{id}/unavailable
-```
-
-Raw JSON:
+### SearchBooks
 
 ```json
 {
- "available":"No"
+ "query":"clean"
 }
 ```
 
 ---
 
-## Endpoint 22
+### GetAvailableBooks
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/available
+```json
+{}
 ```
 
 ---
 
-## Endpoint 23
+### CountBooks
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/stats
+```json
+{}
 ```
 
 ---
 
-## Endpoint 24
+# 5. Borrow Service gRPC Testing
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/books/count
-```
-
----
-
-# 5. Borrow Service Testing
-
-## Endpoint 25
-
-Method:
-
-```txt
-POST
-```
-
-URL:
-
-```txt
-/api/borrows
-```
-
-Raw JSON:
+### CreateBorrow
 
 ```json
 {
@@ -619,53 +287,17 @@ Raw JSON:
 
 ---
 
-## Endpoint 26
+### GetBorrow
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows
+```json
+{
+ "id":"1"
+}
 ```
 
 ---
 
-## Endpoint 27
-
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/{id}
-```
-
----
-
-## Endpoint 28
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/borrows/{id}/return
-```
-
-Raw JSON:
+### GetAllBorrows
 
 ```json
 {}
@@ -673,161 +305,109 @@ Raw JSON:
 
 ---
 
-## Endpoint 29
-
-Method:
-
-```txt
-PUT
-```
-
-URL:
-
-```txt
-/api/borrows/{id}/extend
-```
-
-Raw JSON:
+### ReturnBorrow
 
 ```json
 {
- "days":7
+ "id":"1"
 }
 ```
 
 ---
 
-## Endpoint 30
+### ExtendBorrowPeriod
 
-Method:
-
-```txt
-DELETE
-```
-
-URL:
-
-```txt
-/api/borrows/{id}/cancel
+```json
+{
+ "id":"1"
+}
 ```
 
 ---
 
-## Endpoint 31
+### CancelBorrow
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/user/{userId}
+```json
+{
+ "id":"1"
+}
 ```
 
 ---
 
-## Endpoint 32
+### GetBorrowsByUserID
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/book/{bookId}
+```json
+{
+ "user_id":"1"
+}
 ```
 
 ---
 
-## Endpoint 33
+### GetBorrowsByBookID
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/active
+```json
+{
+ "book_id":"3"
+}
 ```
 
 ---
 
-## Endpoint 34
+### GetActiveBorrows
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/overdue
+```json
+{}
 ```
 
 ---
 
-## Endpoint 35
+### GetOverdueBorrows
 
-Method:
-
-```txt
-GET
-```
-
-URL:
-
-```txt
-/api/borrows/count
+```json
+{}
 ```
 
 ---
 
-## Endpoint 36
+### CountBorrows
 
-Method:
-
-```txt
-GET
+```json
+{}
 ```
 
-URL:
+---
 
-```txt
-/api/borrows/exists/{id}
+### CheckBorrowExists
+
+```json
+{
+ "id":"1"
+}
 ```
 
 ---
 
 # 6. Screenshot Section
 
-For every endpoint include:
+For every test include:
 
-* Postman request URL
-* Raw JSON body
-* Response JSON
-* Status code
+```txt
+Method name
+Request JSON
+Response JSON
+Status OK
+```
 
 Example:
 
 ```txt
-Figure 1. Testing POST /api/users/register endpoint using Postman
+Figure 1. Testing CreateBook gRPC method in Postman.
 ```
 
 ---
 
 # 7. Conclusion
 
-All 36 endpoints of the E-Library Microservices System were tested using Postman. CRUD operations, search endpoints, count endpoints, update methods, and borrow management functionality were validated successfully.
-
-Testing confirmed communication between User Service, Book Service, Borrow Service, PostgreSQL databases, and API Gateway.
+All 36 gRPC methods were tested successfully. The tests validated communication between API Gateway and microservices. CRUD operations, borrow management, search functionality, and statistics endpoints operated correctly.
